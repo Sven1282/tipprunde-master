@@ -3,105 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Tipprunde 25/26</title>
+    <title>Buli Master LIVE</title>
     <script src="https://tailwindcss.com"></script>
     <style>
-        .form-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin: 0 1px; }
-        .win { background-color: #22c55e; } /* Grün */
-        .loss { background-color: #ef4444; } /* Rot */
-        .draw { background-color: #94a3b8; } /* Grau */
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        body { background: #020617; color: #ffffff; }
+        .glass { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); }
+        .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="bg-[#020617] text-slate-100 font-sans min-h-screen">
-
-    <!-- Header im Check24-Style -->
-    <header class="sticky top-0 z-50 glass border-b border-white/10">
-        <div class="max-w-md mx-auto p-4">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-xl font-black italic tracking-tighter text-blue-500">MASTER <span class="text-white">TIP</span></h1>
-                <div class="flex gap-2">
-                    <button onclick="setUser('Sven')" id="user-Sven" class="w-10 h-10 rounded-full border-2 border-slate-700 flex items-center justify-center font-bold text-xs transition-all">S</button>
-                    <button onclick="setUser('Melli')" id="user-Melli" class="w-10 h-10 rounded-full border-2 border-slate-700 flex items-center justify-center font-bold text-xs transition-all">M</button>
-                    <button onclick="setUser('S.P.')" id="user-SP" class="w-10 h-10 rounded-full border-2 border-slate-700 flex items-center justify-center font-bold text-xs transition-all">P</button>
-                </div>
-            </div>
-            <!-- Spieltag-Selector -->
-            <div class="flex justify-between px-2 text-[10px] font-bold uppercase text-slate-500">
-                <button onclick="setDay(30)" class="day-btn text-blue-500">Tag 30</button>
-                <button onclick="setDay(31)" class="day-btn">Tag 31</button>
-                <button onclick="setDay(32)" class="day-btn">Tag 32</button>
-                <button onclick="setDay(33)" class="day-btn">Tag 33</button>
-                <button onclick="setDay(34)" class="day-btn">Tag 34</button>
-            </div>
+<body class="p-4">
+    <header class="mb-8 flex justify-between items-center border-b border-white/10 pb-4">
+        <h1 class="text-2xl font-black text-blue-500 italic">LIVE <span class="text-white uppercase tracking-tighter">Master</span></h1>
+        <div class="flex gap-2 text-xs font-bold uppercase">
+            <span class="text-slate-400">Tipper:</span> <span class="text-blue-400" id="currentTipper">Sven</span>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 pb-32" id="match-list">
-        <!-- Spiele werden hier eingefügt -->
-    </main>
-
-    <script>
-        // Beispiel-Daten inklusive Form-Trend (S=Sieg, N=Niederlage, U=Unentschieden)
-        const matches = [
-            { 
-                id: 2301, day: 30, league: '2. BL', 
-                home: 'Holstein Kiel', homeForm: ['S','S','N','S','U'],
-                away: 'Kaiserslautern', awayForm: ['N','U','N','S','N'],
-                time: 'Fr. 17.04. 18:30' 
-            },
-            { 
-                id: 301, day: 30, league: '1. BL', 
-                home: 'Leverkusen', homeForm: ['S','S','S','S','U'],
-                away: 'FC Augsburg', awayForm: ['U','N','S','N','N'],
-                time: 'Sa. 18.04. 15:30' 
-            }
-        ];
-
-        function renderTrend(formArray) {
-            return formArray.map(res => {
-                let color = res === 'S' ? 'win' : (res === 'N' ? 'loss' : 'draw');
-                return `<span class="form-dot ${color}"></span>`;
-            }).join('');
-        }
-
-        function setDay(day) {
-            const list = document.getElementById('match-list');
-            list.innerHTML = `<h2 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest">Spieltag ${day} • April 2026</h2>`;
-            
-            matches.filter(m => m.day === day).forEach(m => {
-                list.innerHTML += `
-                <div class="glass rounded-3xl p-5 mb-4 shadow-lg">
-                    <div class="text-[9px] text-slate-500 mb-3 flex justify-between font-mono">
-                        <span>${m.league} • ${m.time} MEZ</span>
-                        <span>Trend (L5)</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <div class="font-bold text-sm truncate">${m.home}</div>
-                            <div class="mt-1">${renderTrend(m.homeForm)}</div>
-                        </div>
-                        <div class="flex gap-2 mx-4">
-                            <input type="number" class="w-11 h-11 bg-slate-800 rounded-xl text-center font-black text-blue-400 border border-white/5 outline-none focus:border-blue-500" placeholder="-">
-                            <input type="number" class="w-11 h-11 bg-slate-800 rounded-xl text-center font-black text-blue-400 border border-white/5 outline-none focus:border-blue-500" placeholder="-">
-                        </div>
-                        <div class="flex-1 text-right">
-                            <div class="font-bold text-sm truncate">${m.away}</div>
-                            <div class="mt-1">${renderTrend(m.awayForm)}</div>
-                        </div>
-                    </div>
-                </div>`;
-            });
-        }
-
-        function setUser(name) {
-            document.querySelectorAll('header button[id^="user-"]').forEach(btn => btn.classList.replace('border-blue-500', 'border-slate-700'));
-            const active = document.getElementById('user-' + (name === 'S.P.' ? 'SP' : name));
-            active.classList.replace('border-slate-700', 'border-blue-500');
-            active.classList.add('bg-blue-500/10');
-        }
-
-        setDay(30);
-    </script>
+    <div class="space-y-4">
+        <!-- Live-Beispiel für Kiel gegen Lautern -->
+        <div class="glass p-6 rounded-3xl relative overflow-hidden">
+            <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-4 tracking-widest">
+                <span class="flex items-center gap-2"><div class="live-pulse"></div> LIVE • 53'</span>
+                <span>2. BUNDESLIGA</span>
+            </div>
+            <div class="flex items-center justify-between text-center">
+                <div class="flex-1 font-bold">Holstein Kiel</div>
+                <div class="px-6 text-3xl font-black bg-black/30 py-2 rounded-2xl">3 : 0</div>
+                <div class="flex-1 font-bold text-slate-300">Kaiserslautern</div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/5 flex justify-around items-center">
+                <div class="text-center"><p class="text-[9px] text-slate-500 uppercase">Sven</p><p class="font-bold text-blue-400">2:1</p></div>
+                <div class="text-center"><p class="text-[9px] text-slate-500 uppercase">Melli</p><p class="font-bold text-blue-400">1:1</p></div>
+                <div class="text-center"><p class="text-[9px] text-slate-500 uppercase">S.P.</p><p class="font-bold text-blue-400">0:2</p></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
