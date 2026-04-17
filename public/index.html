@@ -6,98 +6,102 @@
     <title>Master Tipprunde 25/26</title>
     <script src="https://tailwindcss.com"></script>
     <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .swipe-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
-        .swipe-item { min-width: 100%; scroll-snap-align: start; }
+        .form-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin: 0 1px; }
+        .win { background-color: #22c55e; } /* Grün */
+        .loss { background-color: #ef4444; } /* Rot */
+        .draw { background-color: #94a3b8; } /* Grau */
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
-<body class="bg-[#05070a] text-slate-200 font-sans selection:bg-blue-500 overflow-x-hidden">
+<body class="bg-[#020617] text-slate-100 font-sans min-h-screen">
 
-    <!-- NAVIGATION: Teilnehmer Auswahl -->
-    <nav class="sticky top-0 z-50 bg-[#0a0f18]/90 backdrop-blur-xl border-b border-white/5">
-        <div class="max-w-md mx-auto flex justify-between p-4">
-            <button onclick="changeUser('Sven')" class="user-btn opacity-50 scale-90 transition-all flex flex-col items-center" id="btn-Sven">
-                <div class="w-12 h-12 rounded-2xl bg-blue-600/20 border-2 border-blue-500 flex items-center justify-center font-black">S</div>
-                <span class="text-[10px] mt-1 font-bold">SVEN</span>
-            </button>
-            <button onclick="changeUser('Melli')" class="user-btn opacity-50 scale-90 transition-all flex flex-col items-center" id="btn-Melli">
-                <div class="w-12 h-12 rounded-2xl bg-pink-600/20 border-2 border-pink-500 flex items-center justify-center font-black">M</div>
-                <span class="text-[10px] mt-1 font-bold">MELLI</span>
-            </button>
-            <button onclick="changeUser('S.P.')" class="user-btn opacity-50 scale-90 transition-all flex flex-col items-center" id="btn-SP">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-600/20 border-2 border-emerald-500 flex items-center justify-center font-black">P</div>
-                <span class="text-[10px] mt-1 font-bold">S.P.</span>
-            </button>
+    <!-- Header im Check24-Style -->
+    <header class="sticky top-0 z-50 glass border-b border-white/10">
+        <div class="max-w-md mx-auto p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-xl font-black italic tracking-tighter text-blue-500">MASTER <span class="text-white">TIP</span></h1>
+                <div class="flex gap-2">
+                    <button onclick="setUser('Sven')" id="user-Sven" class="w-10 h-10 rounded-full border-2 border-slate-700 flex items-center justify-center font-bold text-xs transition-all">S</button>
+                    <button onclick="setUser('Melli')" id="user-Melli" class="w-10 h-10 rounded-full border-2 border-slate-700 flex items-center justify-center font-bold text-xs transition-all">M</button>
+                    <button onclick="setUser('S.P.')" id="user-SP" class="w-10 h-10 rounded-full border-2 border-slate-700 flex items-center justify-center font-bold text-xs transition-all">P</button>
+                </div>
+            </div>
+            <!-- Spieltag-Selector -->
+            <div class="flex justify-between px-2 text-[10px] font-bold uppercase text-slate-500">
+                <button onclick="setDay(30)" class="day-btn text-blue-500">Tag 30</button>
+                <button onclick="setDay(31)" class="day-btn">Tag 31</button>
+                <button onclick="setDay(32)" class="day-btn">Tag 32</button>
+                <button onclick="setDay(33)" class="day-btn">Tag 33</button>
+                <button onclick="setDay(34)" class="day-btn">Tag 34</button>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- SPIELTAGE REITER -->
-    <div class="flex overflow-x-auto no-scrollbar gap-6 px-6 py-4 bg-[#0a0f18] text-xs font-black uppercase tracking-tighter border-b border-white/5">
-        <button onclick="showDay(30)" class="day-link text-blue-500">Tag 30</button>
-        <button onclick="showDay(31)" class="day-link opacity-40">Tag 31</button>
-        <button onclick="showDay(32)" class="day-link opacity-40">Tag 32</button>
-        <button onclick="showDay(33)" class="day-link opacity-40">Tag 33</button>
-        <button onclick="showDay(34)" class="day-link opacity-40">Tag 34</button>
-    </div>
-
-    <main class="max-w-md mx-auto p-4 pb-32">
-        <div id="match-container" class="space-y-4">
-            <!-- Spiele werden hier automatisch eingefügt -->
-        </div>
+    <main class="max-w-md mx-auto p-4 pb-32" id="match-list">
+        <!-- Spiele werden hier eingefügt -->
     </main>
 
-    <!-- FLOATING FOOTER -->
-    <footer class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-xs bg-white text-black h-16 rounded-3xl shadow-2xl flex items-center justify-between px-8">
-         <div class="flex flex-col">
-            <span class="text-[9px] font-black text-slate-400 uppercase">Aktuell</span>
-            <span id="display-user" class="text-lg font-black italic uppercase">Wählen...</span>
-         </div>
-         <button onclick="saveAll()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-xs uppercase animate-pulse">Speichern</button>
-    </footer>
-
     <script>
-        let activeUser = '';
+        // Beispiel-Daten inklusive Form-Trend (S=Sieg, N=Niederlage, U=Unentschieden)
         const matches = [
-            { id: 1, day: 30, home: 'Bayer Leverkusen', away: 'FC Augsburg', time: '15:30 MEZ' },
-            { id: 2, day: 30, home: 'FC Bayern', away: 'VfB Stuttgart', time: '15:30 MEZ' },
-            { id: 3, day: 31, home: 'Dortmund', away: 'Leipzig', time: '18:30 MEZ' }
+            { 
+                id: 2301, day: 30, league: '2. BL', 
+                home: 'Holstein Kiel', homeForm: ['S','S','N','S','U'],
+                away: 'Kaiserslautern', awayForm: ['N','U','N','S','N'],
+                time: 'Fr. 17.04. 18:30' 
+            },
+            { 
+                id: 301, day: 30, league: '1. BL', 
+                home: 'Leverkusen', homeForm: ['S','S','S','S','U'],
+                away: 'FC Augsburg', awayForm: ['U','N','S','N','N'],
+                time: 'Sa. 18.04. 15:30' 
+            }
         ];
 
-        function changeUser(name) {
-            activeUser = name;
-            document.getElementById('display-user').innerText = name;
-            document.querySelectorAll('.user-btn').forEach(btn => btn.style.opacity = '0.5');
-            const id = name === 'S.P.' ? 'btn-SP' : 'btn-' + name;
-            document.getElementById(id).style.opacity = '1';
-            document.getElementById(id).style.transform = 'scale(1.1)';
+        function renderTrend(formArray) {
+            return formArray.map(res => {
+                let color = res === 'S' ? 'win' : (res === 'N' ? 'loss' : 'draw');
+                return `<span class="form-dot ${color}"></span>`;
+            }).join('');
         }
 
-        function showDay(day) {
-            const container = document.getElementById('match-container');
-            container.innerHTML = '';
+        function setDay(day) {
+            const list = document.getElementById('match-list');
+            list.innerHTML = `<h2 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest">Spieltag ${day} • April 2026</h2>`;
+            
             matches.filter(m => m.day === day).forEach(m => {
-                container.innerHTML += `
-                    <div class="bg-[#0f172a] rounded-[2rem] p-6 border border-white/5">
-                        <div class="text-[10px] text-slate-500 mb-4 font-bold uppercase tracking-widest text-center">${m.time}</div>
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="flex-1 text-right font-black text-sm">${m.home}</div>
-                            <div class="flex gap-1">
-                                <input type="text" placeholder="-" class="w-10 h-10 bg-black/40 border border-white/10 rounded-xl text-center font-black">
-                                <input type="text" placeholder="-" class="w-10 h-10 bg-black/40 border border-white/10 rounded-xl text-center font-black">
-                            </div>
-                            <div class="flex-1 text-left font-black text-sm">${m.away}</div>
+                list.innerHTML += `
+                <div class="glass rounded-3xl p-5 mb-4 shadow-lg">
+                    <div class="text-[9px] text-slate-500 mb-3 flex justify-between font-mono">
+                        <span>${m.league} • ${m.time} MEZ</span>
+                        <span>Trend (L5)</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-bold text-sm truncate">${m.home}</div>
+                            <div class="mt-1">${renderTrend(m.homeForm)}</div>
                         </div>
-                    </div>`;
+                        <div class="flex gap-2 mx-4">
+                            <input type="number" class="w-11 h-11 bg-slate-800 rounded-xl text-center font-black text-blue-400 border border-white/5 outline-none focus:border-blue-500" placeholder="-">
+                            <input type="number" class="w-11 h-11 bg-slate-800 rounded-xl text-center font-black text-blue-400 border border-white/5 outline-none focus:border-blue-500" placeholder="-">
+                        </div>
+                        <div class="flex-1 text-right">
+                            <div class="font-bold text-sm truncate">${m.away}</div>
+                            <div class="mt-1">${renderTrend(m.awayForm)}</div>
+                        </div>
+                    </div>
+                </div>`;
             });
         }
 
-        async function saveAll() {
-            if(!activeUser) return alert('Bitte zuerst Teilnehmer wählen!');
-            alert('Tipps für ' + activeUser + ' wurden an Supabase gesendet!');
+        function setUser(name) {
+            document.querySelectorAll('header button[id^="user-"]').forEach(btn => btn.classList.replace('border-blue-500', 'border-slate-700'));
+            const active = document.getElementById('user-' + (name === 'S.P.' ? 'SP' : name));
+            active.classList.replace('border-slate-700', 'border-blue-500');
+            active.classList.add('bg-blue-500/10');
         }
 
-        // Start-Ansicht
-        showDay(30);
+        setDay(30);
     </script>
 </body>
 </html>
