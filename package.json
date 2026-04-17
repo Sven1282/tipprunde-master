@@ -1,0 +1,9 @@
+{
+  "name": "buli-master",
+  "version": "1.0.0",
+  "dependencies": {
+    "@supabase/supabase-js": "latest",
+    "express": "latest"
+  },
+  "scripts": { "start": "node server.js" }
+}
