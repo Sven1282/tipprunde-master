@@ -2,42 +2,125 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buli Master LIVE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULTRA Master Tipprunde 25/26</title>
     <script src="https://tailwindcss.com"></script>
     <style>
-        body { background: #020617; color: #ffffff; }
-        .glass { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); }
-        .live-pulse { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        @import url('https://googleapis.com');
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top, #0f172a 0%, #020617 100%); color: #ffffff; }
+        .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+        .live-glow { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); border: 1px solid rgba(239, 68, 68, 0.5); }
+        .swipe-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+        .swipe-container::-webkit-scrollbar { display: none; }
+        .spieltag-page { min-width: 100vw; scroll-snap-align: start; padding: 1.5rem; box-sizing: border-box; }
+        .form-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin: 0 2px; }
+        .win { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+        .loss { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+        .draw { background: #94a3b8; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="p-4">
-    <header class="mb-8 flex justify-between items-center border-b border-white/10 pb-4">
-        <h1 class="text-2xl font-black text-blue-500 italic">LIVE <span class="text-white uppercase tracking-tighter">Master</span></h1>
-        <div class="flex gap-2 text-xs font-bold uppercase">
-            <span class="text-slate-400">Tipper:</span> <span class="text-blue-400" id="currentTipper">Sven</span>
+<body class="pb-24">
+
+    <!-- TOP HEADER (Check24 Style but Cooler) -->
+    <header class="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-md border-b border-white/5 p-4">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Saison 2025/26</span>
+                <h1 class="text-xl font-black italic tracking-tighter uppercase">Master<span class="text-blue-500">Live</span></h1>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="changeUser('Sven')" id="u-Sven" class="w-10 h-10 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-black transition-all hover:border-blue-500">S</button>
+                <button onclick="changeUser('Melli')" id="u-Melli" class="w-10 h-10 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-black transition-all hover:border-pink-500">M</button>
+                <button onclick="changeUser('S.P.')" id="u-SP" class="w-10 h-10 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-black transition-all hover:border-emerald-500">P</button>
+            </div>
         </div>
     </header>
 
-    <div class="space-y-4">
-        <!-- Live-Beispiel für Kiel gegen Lautern -->
-        <div class="glass p-6 rounded-3xl relative overflow-hidden">
-            <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-4 tracking-widest">
-                <span class="flex items-center gap-2"><div class="live-pulse"></div> LIVE • 53'</span>
-                <span>2. BUNDESLIGA</span>
+    <!-- HORIZONTAL SWIPE AREA -->
+    <div class="swipe-container" id="mainSwiper">
+        
+        <!-- SPIELTAG 30 PAGE -->
+        <div class="spieltag-page">
+            <div class="flex justify-between items-end mb-6">
+                <h2 class="text-3xl font-black italic">Spieltag 30</h2>
+                <span class="text-xs font-bold text-slate-500">17. - 19. APR 2026</span>
             </div>
-            <div class="flex items-center justify-between text-center">
-                <div class="flex-1 font-bold">Holstein Kiel</div>
-                <div class="px-6 text-3xl font-black bg-black/30 py-2 rounded-2xl">3 : 0</div>
-                <div class="flex-1 font-bold text-slate-300">Kaiserslautern</div>
+
+            <!-- LIVE MATCH CARD -->
+            <div class="glass-card p-6 live-glow mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[10px] font-black bg-red-600 px-2 py-1 rounded-md animate-pulse">LIVE 58'</span>
+                    <span class="text-[10px] font-bold text-slate-400">2. BUNDESLIGA</span>
+                </div>
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex-1 text-center">
+                        <div class="text-sm font-black uppercase mb-1">Kiel</div>
+                        <div class="flex justify-center gap-1 leading-none mb-1">
+                            <span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot win"></span>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-black italic tracking-tighter bg-white/5 px-4 py-2 rounded-2xl">3:0</div>
+                    <div class="flex-1 text-center">
+                        <div class="text-sm font-black uppercase mb-1 text-slate-400">Lautern</div>
+                        <div class="flex justify-center gap-1 leading-none mb-1">
+                            <span class="form-dot loss"></span><span class="form-dot draw"></span><span class="form-dot loss"></span><span class="form-dot win"></span><span class="form-dot loss"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- TIPPS DER TEILNEHMER -->
+                <div class="mt-6 pt-4 border-t border-white/5 grid grid-cols-3 text-center gap-2">
+                    <div class="bg-blue-500/10 py-2 rounded-xl"><p class="text-[8px] text-slate-500 font-bold uppercase">Sven</p><p class="text-xs font-black">2:1</p></div>
+                    <div class="bg-blue-500/10 py-2 rounded-xl"><p class="text-[8px] text-slate-500 font-bold uppercase">Melli</p><p class="text-xs font-black">1:1</p></div>
+                    <div class="bg-blue-500/10 py-2 rounded-xl"><p class="text-[8px] text-slate-500 font-bold uppercase">S.P.</p><p class="text-xs font-black">0:2</p></div>
+                </div>
             </div>
-            <div class="mt-6 pt-4 border-t border-white/5 flex justify-around items-center">
-                <div class="text-center"><p class="text-[9px] text-slate-500 uppercase">Sven</p><p class="font-bold text-blue-400">2:1</p></div>
-                <div class="text-center"><p class="text-[9px] text-slate-500 uppercase">Melli</p><p class="font-bold text-blue-400">1:1</p></div>
-                <div class="text-center"><p class="text-[9px] text-slate-500 uppercase">S.P.</p><p class="font-bold text-blue-400">0:2</p></div>
+
+            <!-- UPCOMING MATCHES -->
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Heute 20:30</h3>
+            <div class="glass-card p-5 mb-4 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 font-bold text-sm uppercase">St. Pauli</div>
+                    <div class="flex gap-2 mx-4">
+                        <input type="number" class="w-11 h-11 bg-slate-900 rounded-xl text-center font-black text-blue-400 border border-white/10" placeholder="-">
+                        <input type="number" class="w-11 h-11 bg-slate-900 rounded-xl text-center font-black text-blue-400 border border-white/10" placeholder="-">
+                    </div>
+                    <div class="flex-1 text-right font-bold text-sm uppercase">Köln</div>
+                </div>
             </div>
         </div>
+
+        <!-- SPIELTAG 31 PAGE (Swipable) -->
+        <div class="spieltag-page">
+            <h2 class="text-3xl font-black italic mb-6">Spieltag 31</h2>
+            <div class="glass-card p-10 text-center text-slate-500 italic">
+                Hier folgen die Tipps für nächste Woche...
+            </div>
+        </div>
+
     </div>
+
+    <!-- STICKY RANKING FOOTER -->
+    <footer class="fixed bottom-0 w-full glass border-t border-white/10 p-4 rounded-t-[32px] shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
+        <div class="max-w-md mx-auto flex justify-between items-center px-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 px-3 py-1 rounded-lg font-black italic text-sm">#1</div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Führung</p>
+                    <p class="text-sm font-black">SVEN <span class="text-blue-500">+12 Pkt</span></p>
+                </div>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">Speichern</button>
+        </div>
+    </footer>
+
+    <script>
+        function changeUser(name) {
+            document.querySelectorAll('header button').forEach(b => b.classList.replace('border-blue-500', 'border-slate-700'));
+            const id = name === 'S.P.' ? 'u-SP' : 'u-' + name;
+            document.getElementById(id).classList.replace('border-slate-700', 'border-blue-500');
+            document.getElementById(id).classList.add('shadow-[0_0_15px_rgba(59,130,246,0.5)]');
+        }
+    </script>
 </body>
 </html>
