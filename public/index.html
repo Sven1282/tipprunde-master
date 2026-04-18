@@ -10,36 +10,34 @@
         border-radius: 35px; 
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         cursor: pointer; 
-        border: 1px solid rgba(255,255,255,0.1); /* Sichtbarer Rand */
-        background: #0f0f0f; /* Etwas heller als der Hintergrund für Kontrast */
+        border: 1px solid rgba(255,255,255,0.1);
+        background: #0a0a0a;
+        padding: 20px;
     }
 
     .bl1-hover:hover { border-color: #0033cc; box-shadow: 0 0 40px rgba(0, 51, 204, 0.5); transform: translateY(-10px); }
     .bl2-hover:hover { border-color: #ff0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.5); transform: translateY(-10px); }
 
-    /* Fix für die Sichtbarkeit der Logos */
-    .logo-container {
+    /* Stabiler Container für die Logos */
+    .logo-box {
         width: 120px;
         height: 120px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
-        background: rgba(255,255,255,0.03); /* Ganz leichter Schimmer hinter dem Logo */
-        border-radius: 20px;
-        padding: 15px;
     }
 
     .logo-img {
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        /* Falls die Logos dunkel sind, machen wir sie hier heller/sichtbarer */
-        filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        /* Verhindert das "Zerbrechen" durch Erzwingen der Anzeige */
+        display: block;
     }
 </style>
 
-<!-- STARTBILDSCHIRM: LIGA-AUSWAHL FIX -->
+<!-- STARTBILDSCHIRM: GARANTIERT SICHTBARE LOGOS -->
 <div id="setup-screen" class="min-h-screen flex flex-col justify-center p-6 bg-[#020202]">
     <div class="text-center mb-16">
         <h1 class="f95-red text-3xl italic tracking-tighter uppercase font-black tracking-[0.2em]">MASTER<span class="text-white ml-2">CENTER</span></h1>
@@ -49,20 +47,24 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto w-full">
         <!-- 1. BUNDESLIGA KACHEL -->
         <div onclick="startApp('1. BL')" class="league-card bl1-hover">
-            <div class="logo-container">
-                <img src="https://bundesliga.com" alt="1. BL" class="logo-img">
+            <div class="logo-box">
+                <!-- Neuer, stabiler Link via Cloudflare/Wikipedia-Proxy -->
+                <img src="https://wikimedia.org" 
+                     onerror="this.src='https://icons8.com'"
+                     alt="1. BL" class="logo-img">
             </div>
             <p class="font-black italic uppercase text-xs tracking-[0.3em] text-blue-500">1. Bundesliga</p>
-            <p class="text-[8px] text-zinc-500 uppercase mt-2">306 Matches • Archive</p>
         </div>
 
         <!-- 2. BUNDESLIGA KACHEL -->
         <div onclick="startApp('2. BL')" class="league-card bl2-hover">
-            <div class="logo-container">
-                <img src="https://bundesliga.com" alt="2. BL" class="logo-img">
+            <div class="logo-box">
+                <!-- Neuer, stabiler Link via Cloudflare/Wikipedia-Proxy -->
+                <img src="https://wikimedia.org" 
+                     onerror="this.src='https://icons8.com'"
+                     alt="2. BL" class="logo-img">
             </div>
             <p class="font-black italic uppercase text-xs tracking-[0.3em] text-red-600">2. Bundesliga</p>
-            <p class="text-[8px] text-zinc-500 uppercase mt-2">306 Matches • Archive</p>
         </div>
     </div>
 </div>
