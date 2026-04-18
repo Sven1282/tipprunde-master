@@ -7,82 +7,83 @@
     <script src="https://tailwindcss.com"></script>
     <style>
         @import url('https://googleapis.com');
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
         .f95-red { color: #ff0000; font-family: 'Syncopate', sans-serif; text-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
         .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 24px; margin-bottom: 20px; }
         .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); }
-        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; width: 100vw; }
         .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
         input { background: #111; border: 1px solid #333; color: #ff0000; font-weight: 900; width: 50px; height: 50px; text-align: center; border-radius: 12px; font-size: 22px; outline: none; }
         .ranking-box { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 12px; text-align: center; }
-        .active-user { border-color: #ff0000 !important; color: #fff !important; background: #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
     </style>
 </head>
-<body class="pb-32">
+<body class="pb-40">
     <header class="p-6 sticky top-0 bg-black/95 backdrop-blur-xl z-50 border-b border-white/5">
         <div class="max-w-md mx-auto flex justify-between items-center mb-6">
             <h1 class="f95-red text-2xl italic tracking-tighter uppercase">F95<span class="text-white font-black italic">MASTER</span></h1>
-            <div class="flex gap-2" id="userSwitch">
-                <button onclick="setUser('Sven')" id="u-Sven" class="w-10 h-10 rounded-xl border-2 border-zinc-800 text-zinc-600 font-black active-user">S</button>
-                <button onclick="setUser('Melli')" id="u-Melli" class="w-10 h-10 rounded-xl border-2 border-zinc-800 text-zinc-600 font-black">M</button>
-                <button onclick="setUser('S.P.')" id="u-SP" class="w-10 h-10 rounded-xl border-2 border-zinc-800 text-zinc-600 font-black">P</button>
+            <div class="flex gap-2">
+                <div class="w-10 h-10 rounded-xl border-2 border-red-600 flex items-center justify-center font-black">S</div>
+                <div class="w-10 h-10 rounded-xl border-2 border-zinc-800 flex items-center justify-center font-black text-zinc-600">M</div>
+                <div class="w-10 h-10 rounded-xl border-2 border-zinc-800 flex items-center justify-center font-black text-zinc-600">P</div>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
-            <div class="ranking-box"><p class="text-[8px] font-black text-zinc-600 uppercase">Sven</p><p class="text-lg font-black">192</p></div>
-            <div class="ranking-box border-red-600/30"><p class="text-[8px] font-black text-zinc-600 uppercase">Melli</p><p class="text-lg font-black text-red-600">238</p></div>
-            <div class="ranking-box"><p class="text-[8px] font-black text-zinc-600 uppercase">S.P.</p><p class="text-lg font-black">224</p></div>
+        <!-- PUNKTE AUS DEINEM MANUSCRIPT -->
+        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto font-black uppercase text-[10px]">
+            <div class="ranking-box">Sven: 192</div>
+            <div class="ranking-box text-red-600">Melli: 238</div>
+            <div class="ranking-box">S.P.: 224</div>
         </div>
     </header>
 
-    <div class="snap-container no-scrollbar" id="content"></div>
+    <div class="snap-container no-scrollbar" id="mainContent">
+        <!-- Hier erscheinen die Spieltage 30-34 -->
+    </div>
 
     <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
-        <button onclick="save()" class="w-full bg-[#ff0000] py-5 rounded-2xl font-black text-xs uppercase tracking-[5px] shadow-[0_0_30px_rgba(255,0,0,0.4)]">TIPPS SICHERN</button>
+        <button onclick="alert('Tipps werden gesichert...')" class="w-full bg-[#ff0000] py-5 rounded-2xl font-black uppercase text-xs tracking-[4px] shadow-[0_0_30px_rgba(255,0,0,0.4)]">Tipps Sichern</button>
     </footer>
 
     <script>
-        let activeUser = 'Sven';
-        async function load() {
+        // HIER SIND DIE SPIELTAGE FEST EINGEBAUT:
+        const rounds =;
+
+        async function init() {
             const res = await fetch('/api/data');
             const data = await res.json();
-            const view = document.getElementById('content');
-            view.innerHTML = '';
-            const rounds =;
+            const container = document.getElementById('mainContent');
             
             rounds.forEach(r => {
-                let html = `<div class="snap-page"><h2 class="f95-red text-2xl mb-8 italic tracking-tighter uppercase underline decoration-4 underline-offset-8 text-white">Spieltag ${r}</h2>`;
-                const rMatches = data.matches.filter(m => m.round === r);
-                rMatches.forEach(m => {
+                let html = `<div class="snap-page"><h2 class="f95-red text-2xl mb-8 italic uppercase underline decoration-4 underline-offset-8 text-white">Spieltag ${r}</h2>`;
+                const matches = data.matches.filter(m => m.round === r);
+                
+                if (matches.length === 0) {
+                    html += `<p class="text-zinc-600 italic">Lade Spieldaten für Tag ${r}...</p>`;
+                }
+
+                matches.forEach(m => {
                     const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
                     html += `
                     <div class="glass-card ${isF95 ? 'f95-border' : ''}">
-                        <div class="flex justify-between text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4">
+                        <div class="flex justify-between text-[9px] font-black text-zinc-600 uppercase mb-4 tracking-widest">
                             <span>${m.league} • ${m.result}</span>
-                            <span class="${isF95 ? 'text-red-600' : ''}">${m.h2h_desc || ''}</span>
+                            <span class="${isF95 ? 'text-red-600 font-black' : ''}">${m.h2h_desc || ''}</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <div class="flex-1 font-black text-xs uppercase tracking-tighter">${m.home_team}</div>
-                            <div class="flex gap-2 mx-2">
-                                <input type="number" id="t-${m.id}-h" placeholder="-">
-                                <input type="number" id="t-${m.id}-a" placeholder="-">
+                            <div class="flex-1 font-black text-xs uppercase tracking-tighter leading-tight">${m.home_team}</div>
+                            <div class="flex gap-2 mx-3">
+                                <input type="number" placeholder="0">
+                                <input type="number" placeholder="0">
                             </div>
-                            <div class="flex-1 text-right font-black text-xs uppercase tracking-tighter text-zinc-400">${m.away_team}</div>
+                            <div class="flex-1 text-right font-black text-xs uppercase tracking-tighter leading-tight text-zinc-400">${m.away_team}</div>
                         </div>
                     </div>`;
                 });
                 html += `</div>`;
-                view.innerHTML += html;
+                container.innerHTML += html;
             });
         }
-        function setUser(n) {
-            activeUser = n;
-            document.querySelectorAll('#userSwitch button').forEach(b => b.classList.remove('active-user'));
-            const id = n === 'S.P.' ? 'u-SP' : 'u-' + n;
-            document.getElementById(id).classList.add('active-user');
-        }
-        function save() { alert('Tipps für ' + activeUser + ' gesichert!'); }
-        load();
+        init();
+        setInterval(init, 60000);
     </script>
 </body>
 </html>
