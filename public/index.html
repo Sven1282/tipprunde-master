@@ -3,115 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MASTER TIPPRUNDE 25/26 - ARCHIV</title>
+    <title>MASTER TIPPRUNDE 25/26</title>
     <script src="https://tailwindcss.com"></script>
     <style>
         @import url('https://googleapis.com');
         body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .f95-red { color: #ff0000; font-family: 'Syncopate', sans-serif; text-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
-        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; transition: 0.3s; }
+        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; }
         .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 25px rgba(255, 0, 0, 0.15); }
-        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .league-card { height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; transition: 0.3s; cursor: pointer; border: 1px solid #222; }
+        .league-card:hover { border-color: #ff0000; transform: scale(1.02); }
+        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
         .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
-        input { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-weight: 900; width: 34px; height: 34px; text-align: center; font-size: 14px; outline: none; transition: 0.2s; }
-        input:focus { border-color: #ff0000; color: #ff0000; }
-        .user-label { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
-        ::-webkit-scrollbar { display: none; }
+        input { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; width: 34px; height: 34px; text-align: center; font-size: 14px; outline: none; }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="pb-40">
+<body class="pb-10">
 
-    <header class="p-6 sticky top-0 bg-black/90 backdrop-blur-xl z-50 border-b border-white/5">
-        <div class="max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="f95-red text-2xl italic uppercase tracking-tighter underline decoration-red-600 decoration-4 underline-offset-8">MASTER<span class="text-white">26</span></h1>
-                <div class="text-[10px] font-black text-zinc-500 uppercase tracking-widest bg-zinc-900 px-3 py-1 rounded-full">Saison 25/26</div>
+    <!-- STARTBILDSCHIRM: LIGA-AUSWAHL -->
+    <div id="setup-screen" class="min-h-screen flex flex-col justify-center p-6 bg-black">
+        <h1 class="f95-red text-3xl italic text-center mb-12 uppercase tracking-tighter">Wähle deine <span class="text-white">Liga</span></h1>
+        <div class="grid grid-cols-2 gap-4 max-w-md mx-auto w-full">
+            <div onclick="startApp('1. BL')" class="league-card bg-zinc-900 shadow-xl">
+                <span class="text-5xl mb-4">⚽</span>
+                <p class="font-black italic uppercase text-sm tracking-widest text-blue-500 text-center px-2">1. Bundesliga</p>
             </div>
-            <div class="grid grid-cols-3 gap-3">
-                <div class="bg-zinc-950 p-3 rounded-2xl border border-white/5 text-center"><p class="user-label text-blue-500">Sven</p><p class="text-xl font-black">192</p></div>
-                <div class="bg-zinc-950 p-3 rounded-2xl border border-red-600/30 text-center"><p class="user-label text-pink-500">Melli</p><p class="text-xl font-black text-red-600">238</p></div>
-                <div class="bg-zinc-950 p-3 rounded-2xl border border-white/5 text-center"><p class="user-label text-emerald-500">S.P.</p><p class="text-xl font-black">224</p></div>
+            <div onclick="startApp('2. BL')" class="league-card bg-zinc-900 shadow-xl border-red-600/20">
+                <span class="text-5xl mb-4 text-red-600">F95</span>
+                <p class="font-black italic uppercase text-sm tracking-widest text-red-600 text-center px-2">2. Bundesliga</p>
             </div>
         </div>
-    </header>
-
-    <!-- NATIVES SWIPEN: SPIELTAG 1 LINKS BIS 34 RECHTS -->
-    <div class="snap-container" id="masterView">
-        <div class="w-full text-center py-20 text-zinc-600 animate-pulse uppercase font-black tracking-widest text-xs">Lade Archiv...</div>
     </div>
 
-    <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
-        <div class="max-w-md mx-auto">
-            <button onclick="saveAll()" class="w-full bg-[#ff0000] py-5 rounded-2xl font-black text-xs uppercase tracking-[5px] shadow-[0_0_30px_rgba(255,0,0,0.3)] active:scale-95 transition-all">
-                Tipps Sichern
-            </button>
-        </div>
-    </footer>
+    <!-- HAUPT-APP (Standardmäßig versteckt) -->
+    <div id="main-app" class="hidden">
+        <header class="p-6 sticky top-0 bg-black/95 backdrop-blur-xl z-50 border-b border-white/5">
+            <div class="max-w-md mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="location.reload()" class="text-[8px] font-bold text-zinc-500 border border-zinc-800 px-2 py-1 rounded-md uppercase">← Zurück</button>
+                    <h1 class="f95-red text-xl italic uppercase tracking-tighter">MASTER<span id="league-label" class="text-white ml-2"></span></h1>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-zinc-950 p-2 rounded-xl text-center border border-white/5"><p class="text-[8px] font-black text-blue-500 uppercase">Sven</p><p class="text-md font-black">192</p></div>
+                    <div class="bg-zinc-950 p-2 rounded-xl text-center border border-red-600/30"><p class="text-[8px] font-black text-pink-500 uppercase">Melli</p><p class="text-md font-black text-red-600">238</p></div>
+                    <div class="bg-zinc-950 p-2 rounded-xl text-center border border-white/5"><p class="text-[8px] font-black text-emerald-500 uppercase">S.P.</p><p class="text-md font-black">224</p></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="snap-container no-scrollbar" id="masterView"></div>
+
+        <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
+            <button onclick="alert('Master-System: Tipps gesichert!')" class="w-full bg-[#ff0000] py-4 rounded-xl font-black text-xs uppercase tracking-[4px]">Tipps Sichern</button>
+        </footer>
+    </div>
 
     <script>
+        let selectedLeague = '';
         const users = ['Sven', 'Melli', 'S.P.'];
 
+        function startApp(league) {
+            selectedLeague = league;
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('league-label').innerText = league;
+            load();
+        }
+
         async function load() {
-            try {
-                const res = await fetch('/api/data');
-                const data = await res.json();
-                
-                // CHRONOLOGISCHE SORTIERUNG
-                const sortedMatches = data.matches.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
-                const rounds = [...new Set(sortedMatches.map(m => m.round))];
-                
-                const view = document.getElementById('masterView');
-                view.innerHTML = '';
+            const res = await fetch('/api/data');
+            const data = await res.json();
+            
+            // Filtern nach der gewählten Liga & Sortieren
+            const filteredMatches = data.matches.filter(m => m.league === selectedLeague);
+            const sortedMatches = filteredMatches.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+            const rounds = [...new Set(sortedMatches.map(m => m.round))];
+            
+            const view = document.getElementById('masterView');
+            view.innerHTML = '';
 
-                rounds.forEach(r => {
-                    let html = `<div class="snap-page">
-                        <div class="flex justify-between items-end mb-8">
-                            <h2 class="text-3xl font-black italic tracking-tighter uppercase">Tag ${r}</h2>
-                            <span class="text-[10px] font-black text-zinc-600 uppercase mb-1">Archiv 25/26</span>
-                        </div>`;
-                    
-                    const rMatches = sortedMatches.filter(m => m.round === r);
-                    
-                    rMatches.forEach(m => {
-                        const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
-                        html += `
-                        <div class="glass-card mb-6 ${isF95 ? 'f95-border' : ''}">
-                            <div class="flex justify-between text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4">
-                                <span>${m.league} • Match ID: ${m.id}</span>
-                                <span class="text-white">${m.result !== '-:-' ? 'Endstand: ' + m.result : 'Offen'}</span>
-                            </div>
-                            <div class="flex items-center justify-between gap-2 mb-6">
-                                <div class="flex-1 text-xs font-black uppercase tracking-tighter leading-tight">${m.home_team}</div>
-                                <div class="text-red-600 font-black italic text-xs px-2">VS</div>
-                                <div class="flex-1 text-right text-xs font-black uppercase tracking-tighter leading-tight text-zinc-400">${m.away_team}</div>
-                            </div>
-                            <!-- TIPP-BOXEN FÜR ALLE DREI -->
-                            <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
-                                ${users.map(u => `
-                                    <div class="text-center">
-                                        <p class="user-label ${u === 'Sven' ? 'text-blue-500' : u === 'Melli' ? 'text-pink-500' : 'text-emerald-500'}">${u}</p>
-                                        <div class="flex justify-center gap-1">
-                                            <input type="number" id="t-${m.id}-${u}-h" placeholder="0">
-                                            <input type="number" id="t-${m.id}-${u}-a" placeholder="0">
-                                        </div>
+            rounds.forEach(r => {
+                let html = `<div class="snap-page"><h2 class="text-2xl font-black italic mb-6 text-red-600 uppercase">Spieltag ${r}</h2>`;
+                const rMatches = sortedMatches.filter(m => m.round === r);
+                
+                rMatches.forEach(m => {
+                    const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
+                    html += `
+                    <div class="glass-card mb-6 ${isF95 ? 'f95-border' : ''}">
+                        <div class="flex justify-between text-[8px] font-black text-zinc-600 uppercase mb-3">
+                            <span>ID: ${m.id} • ${m.result !== '-:-' ? 'Endstand: ' + m.result : 'Offen'}</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <div class="flex-1 text-xs font-black uppercase tracking-tighter">${m.home_team}</div>
+                            <div class="text-red-600 font-black italic text-xs px-2">VS</div>
+                            <div class="flex-1 text-right text-xs font-black uppercase tracking-tighter text-zinc-400">${m.away_team}</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-3">
+                            ${users.map(u => `
+                                <div class="text-center">
+                                    <p class="text-[7px] font-black uppercase opacity-40 mb-1">${u}</p>
+                                    <div class="flex justify-center gap-1">
+                                        <input type="number" id="t-${m.id}-${u}-h" placeholder="0">
+                                        <input type="number" id="t-${m.id}-${u}-a" placeholder="0">
                                     </div>
-                                `).join('')}
-                            </div>
-                        </div>`;
-                    });
-                    html += `</div>`;
-                    view.innerHTML += html;
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
                 });
-            } catch (e) {
-                console.error(e);
-            }
+                html += `</div>`;
+                view.innerHTML += html;
+            });
         }
-
-        function saveAll() {
-            alert('MASTER-SYSTEM: Alle archivierten Tipps wurden gesichert!');
-        }
-
-        load();
     </script>
 </body>
 </html>
