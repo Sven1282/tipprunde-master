@@ -10,7 +10,6 @@
         body { background-color: #020202; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
         .f95-red { color: #ff0000; font-family: 'Syncopate', sans-serif; text-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
         
-        /* KACHEL DESIGN */
         .league-card { 
             height: 300px; 
             display: flex; 
@@ -27,7 +26,8 @@
         .bl1-hover:hover { border-color: #0033cc; box-shadow: 0 0 40px rgba(0, 51, 204, 0.4); transform: translateY(-10px); }
         .bl2-hover:hover { border-color: #ff0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.4); transform: translateY(-10px); }
         
-        .logo-svg { width: 100px; height: 100px; margin-bottom: 25px; }
+        .logo-box { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
         .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; }
         .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 25px rgba(255, 0, 0, 0.15); }
@@ -40,7 +40,7 @@
 </head>
 <body>
 
-    <!-- STARTBILDSCHIRM: LIGA-AUSWAHL MIT EINGEBAUTEN LOGOS -->
+    <!-- STARTBILDSCHIRM: LIGA-AUSWAHL -->
     <div id="setup-screen" class="min-h-screen flex flex-col justify-center p-6">
         <div class="text-center mb-16">
             <h1 class="f95-red text-3xl italic tracking-tighter uppercase font-black">MASTER<span class="text-white ml-2">CENTER</span></h1>
@@ -50,22 +50,17 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto w-full">
             <!-- 1. BUNDESLIGA KACHEL -->
             <div onclick="startApp('1. BL')" class="league-card bl1-hover">
-                <!-- Bundesliga Logo SVG -->
-                <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://w3.org">
-                    <path d="M10 10H90V90H10V10Z" fill="#D20515"/>
-                    <path d="M30 30L70 50L30 70V30Z" fill="white"/>
-                </svg>
+                <div class="logo-box">
+                    <img src="https://wikimedia.org" alt="1. BL" class="logo-img">
+                </div>
                 <p class="font-black italic uppercase text-xs tracking-[0.3em] text-blue-500">1. Bundesliga</p>
             </div>
 
             <!-- 2. BUNDESLIGA KACHEL -->
             <div onclick="startApp('2. BL')" class="league-card bl2-hover">
-                <!-- 2. Bundesliga Logo SVG (Stilisiert) -->
-                <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://w3.org">
-                    <path d="M10 10H90V90H10V10Z" fill="#D20515"/>
-                    <path d="M30 30L70 50L30 70V30Z" fill="white"/>
-                    <rect x="75" y="20" width="10" height="60" fill="white" opacity="0.5"/>
-                </svg>
+                <div class="logo-box">
+                    <img src="https://wikimedia.org" alt="2. BL" class="logo-img">
+                </div>
                 <p class="font-black italic uppercase text-xs tracking-[0.3em] text-red-600">2. Bundesliga</p>
             </div>
         </div>
