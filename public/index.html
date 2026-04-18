@@ -9,40 +9,22 @@
         @import url('https://googleapis.com');
         body { background-color: #020202; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
         .f95-red { color: #ff0000; font-family: 'Syncopate', sans-serif; text-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
-        
-        .league-card { 
-            height: 300px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            border-radius: 40px; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            cursor: pointer; 
-            border: 1px solid rgba(255,255,255,0.05);
-            background: #0a0a0a;
-            padding: 20px;
-        }
+        .league-card { height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 40px; transition: all 0.4s; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); background: #0a0a0a; padding: 20px; }
         .bl1-hover:hover { border-color: #0033cc; box-shadow: 0 0 40px rgba(0, 51, 204, 0.4); transform: translateY(-10px); }
         .bl2-hover:hover { border-color: #ff0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.4); transform: translateY(-10px); }
-        
-        .logo-box { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-        .logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; }
+        .hidden { display: none; }
+        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; margin-bottom: 20px; }
         .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 25px rgba(255, 0, 0, 0.15); }
         .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
         .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
-        input { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; width: 34px; height: 34px; text-align: center; font-size: 14px; outline: none; }
-        .hidden { display: none; }
-        ::-webkit-scrollbar { display: none; }
+        input { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; width: 34px; height: 34px; text-align: center; }
     </style>
 </head>
 <body>
 
     <!-- STARTBILDSCHIRM: LIGA-AUSWAHL -->
     <div id="setup-screen" class="min-h-screen flex flex-col justify-center p-6">
-        <div class="text-center mb-16">
+        <div class="text-center mb-12">
             <h1 class="f95-red text-3xl italic tracking-tighter uppercase font-black">MASTER<span class="text-white ml-2">CENTER</span></h1>
             <p class="text-[9px] font-bold text-zinc-600 uppercase tracking-[0.4em] mt-2">Saison 2025/2026</p>
         </div>
@@ -50,18 +32,25 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto w-full">
             <!-- 1. BUNDESLIGA KACHEL -->
             <div onclick="startApp('1. BL')" class="league-card bl1-hover">
-                <div class="logo-box">
-                    <img src="https://wikimedia.org" alt="1. BL" class="logo-img">
-                </div>
-                <p class="font-black italic uppercase text-xs tracking-[0.3em] text-blue-500">1. Bundesliga</p>
+                <!-- GEZEICHNETES LOGO 1. BL -->
+                <svg width="120" height="120" viewBox="0 0 100 100">
+                    <rect width="100" height="100" rx="20" fill="#D20515"/>
+                    <path d="M25 25 L75 50 L25 75 Z" fill="white"/>
+                    <text x="50" y="90" text-anchor="middle" fill="white" font-size="8" font-weight="bold" font-family="Arial">BUNDESLIGA</text>
+                </svg>
+                <p class="font-black uppercase text-xs tracking-[0.2em] text-blue-500 mt-4">1. Bundesliga</p>
             </div>
 
             <!-- 2. BUNDESLIGA KACHEL -->
             <div onclick="startApp('2. BL')" class="league-card bl2-hover">
-                <div class="logo-box">
-                    <img src="https://wikimedia.org" alt="2. BL" class="logo-img">
-                </div>
-                <p class="font-black italic uppercase text-xs tracking-[0.3em] text-red-600">2. Bundesliga</p>
+                <!-- GEZEICHNETES LOGO 2. BL -->
+                <svg width="120" height="120" viewBox="0 0 100 100">
+                    <rect width="100" height="100" rx="20" fill="#D20515"/>
+                    <path d="M20 25 L60 50 L20 75 Z" fill="white"/>
+                    <rect x="70" y="25" width="10" height="50" fill="white"/>
+                    <text x="50" y="90" text-anchor="middle" fill="white" font-size="8" font-weight="bold" font-family="Arial">2. BUNDESLIGA</text>
+                </svg>
+                <p class="font-black uppercase text-xs tracking-[0.2em] text-red-600 mt-4">2. Bundesliga</p>
             </div>
         </div>
     </div>
@@ -69,23 +58,21 @@
     <!-- HAUPT-APP -->
     <div id="main-app" class="hidden">
         <header class="p-6 sticky top-0 bg-black/95 backdrop-blur-xl z-50 border-b border-white/5">
-            <div class="max-w-md mx-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <button onclick="location.reload()" class="text-[8px] font-black text-zinc-500 border border-zinc-800 px-3 py-1 rounded-md uppercase">← Auswahl</button>
-                    <h1 class="f95-red text-xl italic uppercase tracking-tighter">MASTER<span id="league-label" class="text-white ml-2"></span></h1>
-                </div>
-                <div class="grid grid-cols-3 gap-3">
-                    <div class="bg-zinc-950 p-2 rounded-xl text-center border border-white/5"><p class="text-[7px] font-black text-blue-500 uppercase mb-1">Sven</p><p class="text-md font-black">192</p></div>
-                    <div class="bg-zinc-950 p-2 rounded-xl text-center border border-red-600/30"><p class="text-[7px] font-black text-pink-500 uppercase mb-1">Melli</p><p class="text-md font-black text-red-600">238</p></div>
-                    <div class="bg-zinc-950 p-2 rounded-xl text-center border border-white/5"><p class="text-[7px] font-black text-emerald-500 uppercase mb-1">S.P.</p><p class="text-md font-black">224</p></div>
-                </div>
+            <div class="max-w-md mx-auto flex justify-between items-center mb-6">
+                <button onclick="location.reload()" class="text-[8px] font-black text-zinc-500 border border-zinc-800 px-3 py-1 rounded-md uppercase">← Auswahl</button>
+                <h1 class="f95-red text-xl italic uppercase tracking-tighter">MASTER<span id="league-label" class="text-white ml-2"></span></h1>
+            </div>
+            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+                <div class="bg-zinc-950 p-2 rounded-xl text-center"><p class="text-[7px] font-black text-blue-500 uppercase">Sven</p><p class="text-md font-black">192</p></div>
+                <div class="bg-zinc-950 p-2 rounded-xl text-center border-red-600/30"><p class="text-[7px] font-black text-pink-500 uppercase">Melli</p><p class="text-md font-black text-red-600">238</p></div>
+                <div class="bg-zinc-950 p-2 rounded-xl text-center"><p class="text-[7px] font-black text-emerald-500 uppercase">S.P.</p><p class="text-md font-black">224</p></div>
             </div>
         </header>
 
         <div class="snap-container" id="masterView"></div>
 
         <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
-            <button onclick="alert('Master-System: Tipps gesichert!')" class="w-full bg-[#ff0000] py-4 rounded-xl font-black text-xs uppercase tracking-[5px] shadow-[0_0_30px_rgba(255,0,0,0.4)]">Tipps Sichern</button>
+            <button onclick="alert('Gespeichert!')" class="w-full bg-[#ff0000] py-4 rounded-xl font-black text-xs uppercase tracking-[5px]">Tipps Sichern</button>
         </footer>
     </div>
 
@@ -107,26 +94,23 @@
             const filtered = data.matches.filter(m => m.league === selectedLeague);
             const sorted = filtered.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
             const rounds = [...new Set(sorted.map(m => m.round))];
-            
             const view = document.getElementById('masterView');
             view.innerHTML = '';
 
             rounds.forEach(r => {
-                let html = `<div class="snap-page"><h2 class="text-2xl font-black italic mb-6 text-red-600 uppercase tracking-tighter">Spieltag ${r}</h2>`;
+                let html = `<div class="snap-page"><h2 class="text-2xl font-black italic mb-6 text-red-600 uppercase tracking-tighter underline decoration-2 underline-offset-8">Spieltag ${r}</h2>`;
                 const rMatches = sorted.filter(m => m.round === r);
                 rMatches.forEach(m => {
                     const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
                     html += `
-                    <div class="glass-card mb-6 ${isF95 ? 'f95-border' : ''}">
-                        <div class="flex justify-between text-[8px] font-black text-zinc-600 uppercase mb-4">
-                            <span>ID: ${m.id} • ${m.result !== '-:-' ? 'Endstand: ' + m.result : 'Offen'}</span>
-                        </div>
+                    <div class="glass-card ${isF95 ? 'f95-border' : ''}">
+                        <div class="flex justify-between text-[8px] font-black text-zinc-600 uppercase mb-4"><span>Match ID: ${m.id}</span><span>${m.result}</span></div>
                         <div class="flex items-center justify-between gap-2 mb-6">
                             <div class="flex-1 text-xs font-black uppercase tracking-tighter">${m.home_team}</div>
-                            <div class="text-red-600 font-black italic text-xs px-2">VS</div>
+                            <div class="text-red-600 font-black italic text-xs">VS</div>
                             <div class="flex-1 text-right text-xs font-black uppercase tracking-tighter text-zinc-400">${m.away_team}</div>
                         </div>
-                        <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
+                        <div class="grid grid-cols-3 gap-2">
                             ${users.map(u => `
                                 <div class="text-center">
                                     <p class="text-[7px] font-black uppercase opacity-40 mb-1">${u}</p>
