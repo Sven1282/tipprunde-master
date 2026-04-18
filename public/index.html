@@ -3,70 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F95 MASTER 25/26</title>
+    <title>MASTER TIPPRUNDE 25/26 - ARCHIV</title>
     <script src="https://tailwindcss.com"></script>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
-        .f95-red { color: #ff0000; font-weight: 900; }
-        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
-        .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
-        .snap { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100vw; }
-        .page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
-        input { background: #111; border: 1px solid #333; color: #f00; width: 45px; height: 45px; text-align: center; border-radius: 10px; font-weight: 900; font-size: 18px; }
+        @import url('https://googleapis.com');
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .f95-red { color: #ff0000; font-family: 'Syncopate', sans-serif; text-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
+        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; transition: 0.3s; }
+        .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 25px rgba(255, 0, 0, 0.15); }
+        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
+        input { background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; font-weight: 900; width: 34px; height: 34px; text-align: center; font-size: 14px; outline: none; transition: 0.2s; }
+        input:focus { border-color: #ff0000; color: #ff0000; }
+        .user-label { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="pb-32">
-    <header class="p-6 sticky top-0 bg-black z-50 border-b border-white/5 text-center">
-        <h1 class="f95-red text-2xl italic uppercase tracking-tighter">F95 MASTER</h1>
-        <div class="flex justify-around mt-4 text-[10px] font-black uppercase text-gray-500">
-            <span id="score-sven">Sven: 192</span>
-            <span id="score-melli">Melli: 238</span>
-            <span id="score-sp">S.P.: 224</span>
+<body class="pb-40">
+
+    <header class="p-6 sticky top-0 bg-black/90 backdrop-blur-xl z-50 border-b border-white/5">
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="f95-red text-2xl italic uppercase tracking-tighter underline decoration-red-600 decoration-4 underline-offset-8">MASTER<span class="text-white">26</span></h1>
+                <div class="text-[10px] font-black text-zinc-500 uppercase tracking-widest bg-zinc-900 px-3 py-1 rounded-full">Saison 25/26</div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-zinc-950 p-3 rounded-2xl border border-white/5 text-center"><p class="user-label text-blue-500">Sven</p><p class="text-xl font-black">192</p></div>
+                <div class="bg-zinc-950 p-3 rounded-2xl border border-red-600/30 text-center"><p class="user-label text-pink-500">Melli</p><p class="text-xl font-black text-red-600">238</p></div>
+                <div class="bg-zinc-950 p-3 rounded-2xl border border-white/5 text-center"><p class="user-label text-emerald-500">S.P.</p><p class="text-xl font-black">224</p></div>
+            </div>
         </div>
     </header>
 
-    <div class="snap" id="view">
-        <p class="p-10 text-center text-gray-600">Lade Master-Daten...</p>
+    <!-- NATIVES SWIPEN: SPIELTAG 1 LINKS BIS 34 RECHTS -->
+    <div class="snap-container" id="masterView">
+        <div class="w-full text-center py-20 text-zinc-600 animate-pulse uppercase font-black tracking-widest text-xs">Lade Archiv...</div>
     </div>
 
     <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
-        <button onclick="save()" class="w-full bg-[#ff0000] py-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-600/40">Tipps Sichern</button>
+        <div class="max-w-md mx-auto">
+            <button onclick="saveAll()" class="w-full bg-[#ff0000] py-5 rounded-2xl font-black text-xs uppercase tracking-[5px] shadow-[0_0_30px_rgba(255,0,0,0.3)] active:scale-95 transition-all">
+                Tipps Sichern
+            </button>
+        </div>
     </footer>
 
     <script>
-        let activeUser = 'Sven';
-        // Hier sind die Spieltage 30-34 fest verdrahtet:
-        const rounds = [27, 28, 29, 30, 31, 32, 33, 34];
+        const users = ['Sven', 'Melli', 'S.P.'];
 
         async function load() {
             try {
                 const res = await fetch('/api/data');
                 const data = await res.json();
-                const view = document.getElementById('view');
-                view.innerHTML = '';
                 
-                rounds.forEach(r => {
-                    let html = `<div class="page"><h2 class="f95-red text-xl mb-6 italic uppercase underline decoration-2 underline-offset-8">Spieltag ${r}</h2>`;
-                    const matches = data.matches.filter(m => m.round === r);
-                    
-                    if (matches.length === 0) {
-                        html += `<p class="text-gray-700 italic">Warte auf Spielplan für Tag ${r}...</p>`;
-                    }
+                // CHRONOLOGISCHE SORTIERUNG
+                const sortedMatches = data.matches.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+                const rounds = [...new Set(sortedMatches.map(m => m.round))];
+                
+                const view = document.getElementById('masterView');
+                view.innerHTML = '';
 
-                    matches.forEach(m => {
+                rounds.forEach(r => {
+                    let html = `<div class="snap-page">
+                        <div class="flex justify-between items-end mb-8">
+                            <h2 class="text-3xl font-black italic tracking-tighter uppercase">Tag ${r}</h2>
+                            <span class="text-[10px] font-black text-zinc-600 uppercase mb-1">Archiv 25/26</span>
+                        </div>`;
+                    
+                    const rMatches = sortedMatches.filter(m => m.round === r);
+                    
+                    rMatches.forEach(m => {
                         const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
                         html += `
-                        <div class="card ${isF95 ? 'f95-border' : ''}">
-                            <div class="flex justify-between text-[9px] text-gray-500 mb-3 uppercase">
-                                <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
+                        <div class="glass-card mb-6 ${isF95 ? 'f95-border' : ''}">
+                            <div class="flex justify-between text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4">
+                                <span>${m.league} • Match ID: ${m.id}</span>
+                                <span class="text-white">${m.result !== '-:-' ? 'Endstand: ' + m.result : 'Offen'}</span>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs font-black uppercase tracking-tighter">${m.home_team}</span>
-                                <div class="flex gap-2">
-                                    <input type="number" id="t-${m.id}-h" placeholder="0">
-                                    <input type="number" id="t-${m.id}-a" placeholder="0">
-                                </div>
-                                <span class="text-xs font-black uppercase text-gray-500 tracking-tighter text-right">${m.away_team}</span>
+                            <div class="flex items-center justify-between gap-2 mb-6">
+                                <div class="flex-1 text-xs font-black uppercase tracking-tighter leading-tight">${m.home_team}</div>
+                                <div class="text-red-600 font-black italic text-xs px-2">VS</div>
+                                <div class="flex-1 text-right text-xs font-black uppercase tracking-tighter leading-tight text-zinc-400">${m.away_team}</div>
+                            </div>
+                            <!-- TIPP-BOXEN FÜR ALLE DREI -->
+                            <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
+                                ${users.map(u => `
+                                    <div class="text-center">
+                                        <p class="user-label ${u === 'Sven' ? 'text-blue-500' : u === 'Melli' ? 'text-pink-500' : 'text-emerald-500'}">${u}</p>
+                                        <div class="flex justify-center gap-1">
+                                            <input type="number" id="t-${m.id}-${u}-h" placeholder="0">
+                                            <input type="number" id="t-${m.id}-${u}-a" placeholder="0">
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>`;
                     });
@@ -74,18 +103,12 @@
                     view.innerHTML += html;
                 });
             } catch (e) {
-                document.getElementById('view').innerHTML = "Verbindungsfehler. Bitte Seite neu laden.";
+                console.error(e);
             }
         }
 
-        async function save() {
-            alert('MASTER-SYSTEM: Tipps für ' + activeUser + ' werden im Tresor gesichert!');
-            // Hier kommt später die echte Datenbank-Speicherung rein
-        }
-
-        function setUser(name) {
-            activeUser = name;
-            alert(name + " ist jetzt aktiv.");
+        function saveAll() {
+            alert('MASTER-SYSTEM: Alle archivierten Tipps wurden gesichert!');
         }
 
         load();
