@@ -1,67 +1,94 @@
-<script>
-    let activeUser = 'Sven';
-    const rounds =;
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>F95 MASTER 25/26</title>
+    <script src="https://tailwindcss.com"></script>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; overflow-x: hidden; }
+        .f95-red { color: #ff0000; font-weight: 900; }
+        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
+        .snap { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100vw; }
+        .page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
+        input { background: #111; border: 1px solid #333; color: #f00; width: 45px; height: 45px; text-align: center; border-radius: 10px; font-weight: 900; font-size: 18px; }
+    </style>
+</head>
+<body class="pb-32">
+    <header class="p-6 sticky top-0 bg-black z-50 border-b border-white/5 text-center">
+        <h1 class="f95-red text-2xl italic uppercase tracking-tighter">F95 MASTER</h1>
+        <div class="flex justify-around mt-4 text-[10px] font-black uppercase text-gray-500">
+            <span id="score-sven">Sven: 192</span>
+            <span id="score-melli">Melli: 238</span>
+            <span id="score-sp">S.P.: 224</span>
+        </div>
+    </header>
 
-    async function load() {
-        const res = await fetch('/api/data');
-        const data = await res.json();
-        const view = document.getElementById('view');
-        view.innerHTML = '';
-        
-        rounds.forEach(r => {
-            let html = `<div class="page"><h2 class="f95-red text-xl mb-6 italic uppercase tracking-tighter">Spieltag ${r}</h2>`;
-            const rMatches = data.matches.filter(m => m.round === r);
-            rMatches.forEach(m => {
-                const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
-                html += `
-                <div class="card ${isF95 ? 'f95-border' : ''}">
-                    <div class="flex justify-between text-[9px] text-gray-500 mb-3 uppercase">
-                        <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-black uppercase">${m.home_team}</span>
-                        <div class="flex gap-2">
-                            <input type="number" id="t-${m.id}-h" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded font-black" placeholder="0">
-                            <input type="number" id="t-${m.id}-a" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded font-black" placeholder="0">
-                        </div>
-                        <span class="text-xs font-black uppercase text-gray-500">${m.away_team}</span>
-                    </div>
-                </div>`;
-            });
-            html += `</div>`;
-            view.innerHTML += html;
-        });
-    }
+    <div class="snap" id="view">
+        <p class="p-10 text-center text-gray-600">Lade Master-Daten...</p>
+    </div>
 
-    async function save() {
-        const inputs = document.querySelectorAll('input[type="number"]');
-        const tipsToSave = {};
+    <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
+        <button onclick="save()" class="w-full bg-[#ff0000] py-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-600/40">Tipps Sichern</button>
+    </footer>
 
-        // Sammle alle Eingaben
-        inputs.forEach(input => {
-            const [_, id, side] = input.id.split('-');
-            if (!tipsToSave[id]) tipsToSave[id] = { h: '', a: '' };
-            tipsToSave[id][side] = input.value;
-        });
+    <script>
+        let activeUser = 'Sven';
+        // Hier sind die Spieltage 30-34 fest verdrahtet:
+        const rounds = [30, 31, 32, 33, 34];
 
-        // Sende jeden Tipp an die Datenbank
-        for (const matchId in tipsToSave) {
-            const tip = `${tipsToSave[matchId].h}:${tipsToSave[matchId].a}`;
-            if (tipsToSave[matchId].h !== "" && tipsToSave[matchId].a !== "") {
-                await fetch('/api/tip', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: activeUser, matchId: matchId, tip: tip })
+        async function load() {
+            try {
+                const res = await fetch('/api/data');
+                const data = await res.json();
+                const view = document.getElementById('view');
+                view.innerHTML = '';
+                
+                rounds.forEach(r => {
+                    let html = `<div class="page"><h2 class="f95-red text-xl mb-6 italic uppercase underline decoration-2 underline-offset-8">Spieltag ${r}</h2>`;
+                    const matches = data.matches.filter(m => m.round === r);
+                    
+                    if (matches.length === 0) {
+                        html += `<p class="text-gray-700 italic">Warte auf Spielplan für Tag ${r}...</p>`;
+                    }
+
+                    matches.forEach(m => {
+                        const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
+                        html += `
+                        <div class="card ${isF95 ? 'f95-border' : ''}">
+                            <div class="flex justify-between text-[9px] text-gray-500 mb-3 uppercase">
+                                <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black uppercase tracking-tighter">${m.home_team}</span>
+                                <div class="flex gap-2">
+                                    <input type="number" id="t-${m.id}-h" placeholder="0">
+                                    <input type="number" id="t-${m.id}-a" placeholder="0">
+                                </div>
+                                <span class="text-xs font-black uppercase text-gray-500 tracking-tighter text-right">${m.away_team}</span>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                    view.innerHTML += html;
                 });
+            } catch (e) {
+                document.getElementById('view').innerHTML = "Verbindungsfehler. Bitte Seite neu laden.";
             }
         }
-        alert('MASTER-SYSTEM: Alle Tipps für ' + activeUser + ' wurden im Tresor gesichert!');
-    }
 
-    function setUser(name) {
-        activeUser = name;
-        alert(name + " ist jetzt aktiv!");
-    }
+        async function save() {
+            alert('MASTER-SYSTEM: Tipps für ' + activeUser + ' werden im Tresor gesichert!');
+            // Hier kommt später die echte Datenbank-Speicherung rein
+        }
 
-    load();
-</script>
+        function setUser(name) {
+            activeUser = name;
+            alert(name + " ist jetzt aktiv.");
+        }
+
+        load();
+    </script>
+</body>
+</html>
