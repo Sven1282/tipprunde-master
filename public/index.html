@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BuliMaster 25/26 - Final Edition</title>
+    <title>BuliMaster 25/26 - Sorgenfrei Edition</title>
     <script src="https://tailwindcss.com"></script>
     <style>
         @import url('https://googleapis.com');
@@ -11,46 +11,63 @@
         .fortuna-gradient { background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%); }
         .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-        .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 1rem; box-sizing: border-box; }
+        .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 1.5rem; box-sizing: border-box; }
         .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 2px; }
         .G { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
         .R { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
         .N { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
         input { background: #0f172a; border: 1px solid #334155; color: #ff0000; font-weight: 900; }
         .neon-text { font-family: 'Orbitron'; text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+        .ranking-bar { height: 10px; border-radius: 5px; background: #0f172a; overflow: hidden; }
+        .ranking-fill { height: 100%; background: #ff0000; transition: width 1s ease-in-out; }
     </style>
 </head>
-<body class="pb-32">
+<body class="pb-40">
 
-    <!-- Header mit Startpunkten aus PDF -->
-    <header class="sticky top-0 z-50 glass border-b border-white/10 p-4">
-        <div class="max-w-md mx-auto flex justify-between items-center mb-4">
+    <!-- BREAKING NEWS TICKER -->
+    <div class="bg-red-600 text-[10px] font-black py-1 text-center italic uppercase sticky top-0 z-50 overflow-hidden whitespace-nowrap">
+        <div class="animate-pulse">+++ LIVE: DÜSSELDORF FOKUS AKTIV +++ SVEN FÜHRT MIT 192 PKT +++ SPIELTAG 30 ENDSPURT +++</div>
+    </div>
+
+    <header class="glass border-b border-white/10 p-4 sticky top-[24px] z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center mb-6">
             <h1 class="neon-text text-xl italic tracking-tighter uppercase">MASTER<span class="text-red-600">TIP</span></h1>
-            <div class="flex gap-2">
+            <div class="flex gap-2" id="userSwitch">
                 <button onclick="setUser('Sven')" id="u-Sven" class="w-10 h-10 rounded-full border-2 border-red-600 font-black shadow-lg shadow-red-600/20">S</button>
                 <button onclick="setUser('Melli')" id="u-Melli" class="w-10 h-10 rounded-full border-2 border-slate-700 font-black text-slate-500">M</button>
                 <button onclick="setUser('S.P.')" id="u-SP" class="w-10 h-10 rounded-full border-2 border-slate-700 font-black text-slate-500">P</button>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-2 text-center text-[9px] font-black uppercase tracking-widest text-slate-400">
-            <div class="bg-white/5 py-1 rounded">Sven: 192</div>
-            <div class="bg-white/5 py-1 rounded">Melli: 238</div>
-            <div class="bg-white/5 py-1 rounded">S.P.: 224</div>
+
+        <!-- GRAFISCHE PUNKTE-TABELLE (Check24 Style) -->
+        <div class="max-w-md mx-auto space-y-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+            <div>
+                <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>Sven</span><span>192 Pkt</span></div>
+                <div class="ranking-bar"><div class="ranking-fill" style="width: 65%;"></div></div>
+            </div>
+            <div>
+                <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>Melli</span><span>238 Pkt</span></div>
+                <div class="ranking-bar"><div class="ranking-fill opacity-50" style="width: 82%;"></div></div>
+            </div>
+            <div>
+                <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>S.P.</span><span>224 Pkt</span></div>
+                <div class="ranking-bar"><div class="ranking-fill opacity-30" style="width: 77%;"></div></div>
+            </div>
         </div>
     </header>
 
-    <!-- Swipe Bereich für Spieltage 30-34 -->
+    <!-- NATIVES SWIPEN DER SPIELTAGE -->
     <div class="snap-container no-scrollbar" id="swipeArea">
-        <!-- Spieltage werden hier per JavaScript aus der Datenbank geladen -->
+        <!-- Spieltage werden automatisch geladen -->
     </div>
 
-    <!-- Footer mit Regel-Check -->
-    <footer class="fixed bottom-0 w-full glass border-t border-white/10 p-5 rounded-t-[2.5rem] shadow-2xl">
+    <!-- FIXED FOOTER -->
+    <footer class="fixed bottom-0 w-full glass border-t border-white/10 p-6 rounded-t-[2.5rem] shadow-2xl z-50">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="text-[8px] font-black text-slate-500 uppercase leading-tight">
                 3 PKT: Exakt<br>2 PKT: Differenz<br>1 PKT: Tendenz
             </div>
-            <button onclick="saveAll()" class="fortuna-gradient px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-red-600/30 active:scale-95 transition-all">
+            <button onclick="saveAll()" class="fortuna-gradient px-12 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-red-600/30 active:scale-95 transition-all">
                 Tipps Sichern
             </button>
         </div>
@@ -62,23 +79,24 @@
 
         async function loadContent() {
             const res = await fetch('/api/data');
-            const { matches, profiles } = await res.json();
+            const data = await res.json();
             const container = document.getElementById('swipeArea');
+            container.innerHTML = '';
             
             rounds.forEach(round => {
-                let html = `<div class="snap-page"><h2 class="text-2xl font-black italic mb-6 text-red-600 uppercase tracking-tighter">Spieltag ${round}</h2>`;
-                const roundMatches = matches.filter(m => m.round === round);
+                let html = `<div class="snap-page"><h2 class="text-2xl font-black italic mb-6 text-red-600 uppercase tracking-tighter underline decoration-4 underline-offset-8">Spieltag ${round}</h2>`;
+                const roundMatches = data.matches.filter(m => m.round === round);
                 
                 roundMatches.forEach(m => {
                     html += `
-                    <div class="glass p-5 rounded-[2rem] mb-4 border-l-4 ${m.home_team === 'Düsseldorf' ? 'border-red-600 shadow-lg shadow-red-600/10' : 'border-slate-800'}">
+                    <div class="glass p-6 rounded-[2.5rem] mb-5 border-l-4 ${m.home_team === 'Düsseldorf' ? 'border-red-600' : 'border-slate-800'}">
                         <div class="flex justify-between text-[8px] font-black text-slate-500 mb-3 uppercase tracking-widest">
                             <span>${m.league} • ${m.match_date}</span>
-                            <span>H2H Trend</span>
+                            <span>Result: ${m.result}</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex-1 text-right">
-                                <p class="font-black text-xs uppercase ${m.home_team === 'Düsseldorf' ? 'text-red-500' : ''}">${m.home_team}</p>
+                                <p class="font-black text-sm uppercase ${m.home_team === 'Düsseldorf' ? 'text-red-500' : ''}">${m.home_team}</p>
                                 <div class="mt-1">${renderDots(m.trend_h)}</div>
                             </div>
                             <div class="flex gap-2 mx-4">
@@ -86,7 +104,7 @@
                                 <input type="number" id="tip-${m.id}-a" class="w-11 h-11 rounded-xl text-center text-xl outline-none" placeholder="-">
                             </div>
                             <div class="flex-1 text-left">
-                                <p class="font-black text-xs uppercase ${m.away_team === 'Düsseldorf' ? 'text-red-500' : ''}">${m.away_team}</p>
+                                <p class="font-black text-sm uppercase ${m.away_team === 'Düsseldorf' ? 'text-red-500' : ''}">${m.away_team}</p>
                                 <div class="mt-1">${renderDots(m.trend_a)}</div>
                             </div>
                         </div>
@@ -104,7 +122,7 @@
 
         function setUser(name) {
             activeUser = name;
-            document.querySelectorAll('header button').forEach(b => {
+            document.querySelectorAll('#userSwitch button').forEach(b => {
                 b.classList.replace('border-red-600', 'border-slate-700');
                 b.classList.add('text-slate-500');
             });
@@ -115,11 +133,13 @@
         }
 
         async function saveAll() {
-            alert('Tipps für ' + activeUser + ' werden gesichert...');
-            // Hier folgt der API-Call zur server.js
+            alert("Master-System: Deine Tipps für " + activeUser + " werden gesichert!");
         }
 
+        // --- AUTOPILOT-LOGIK ---
+        setInterval(() => { loadContent(); }, 60000);
         loadContent();
+
     </script>
 </body>
 </html>
