@@ -3,143 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BuliMaster 25/26 - Sorgenfrei Edition</title>
+    <title>MASTER TIPPRUNDE 25/26</title>
     <script src="https://tailwindcss.com"></script>
     <style>
         @import url('https://googleapis.com');
-        body { background: #020617; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .fortuna-gradient { background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%); }
-        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-        .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 1.5rem; box-sizing: border-box; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 2px; }
-        .G { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .R { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-        .N { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
-        input { background: #0f172a; border: 1px solid #334155; color: #ff0000; font-weight: 900; }
-        .neon-text { font-family: 'Orbitron'; text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
-        .ranking-bar { height: 10px; border-radius: 5px; background: #0f172a; overflow: hidden; }
-        .ranking-fill { height: 100%; background: #ff0000; transition: width 1s ease-in-out; }
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .f95-red { color: #ff0000; font-family: 'Syncopate', sans-serif; text-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
+        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 24px; margin-bottom: 20px; }
+        .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); }
+        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
+        input { background: #111; border: 1px solid #333; color: #ff0000; font-weight: 900; width: 50px; height: 50px; text-align: center; border-radius: 12px; font-size: 22px; outline: none; }
+        .ranking-box { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 12px; text-align: center; }
+        .active-user { border-color: #ff0000 !important; color: #fff !important; background: #ff0000 !important; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
     </style>
 </head>
-<body class="pb-40">
-
-    <!-- BREAKING NEWS TICKER -->
-    <div class="bg-red-600 text-[10px] font-black py-1 text-center italic uppercase sticky top-0 z-50 overflow-hidden whitespace-nowrap">
-        <div class="animate-pulse">+++ LIVE: DÜSSELDORF FOKUS AKTIV +++ SVEN FÜHRT MIT 192 PKT +++ SPIELTAG 30 ENDSPURT +++</div>
-    </div>
-
-    <header class="glass border-b border-white/10 p-4 sticky top-[24px] z-40">
+<body class="pb-32">
+    <header class="p-6 sticky top-0 bg-black/95 backdrop-blur-xl z-50 border-b border-white/5">
         <div class="max-w-md mx-auto flex justify-between items-center mb-6">
-            <h1 class="neon-text text-xl italic tracking-tighter uppercase">MASTER<span class="text-red-600">TIP</span></h1>
+            <h1 class="f95-red text-2xl italic tracking-tighter uppercase">F95<span class="text-white font-black italic">MASTER</span></h1>
             <div class="flex gap-2" id="userSwitch">
-                <button onclick="setUser('Sven')" id="u-Sven" class="w-10 h-10 rounded-full border-2 border-red-600 font-black shadow-lg shadow-red-600/20">S</button>
-                <button onclick="setUser('Melli')" id="u-Melli" class="w-10 h-10 rounded-full border-2 border-slate-700 font-black text-slate-500">M</button>
-                <button onclick="setUser('S.P.')" id="u-SP" class="w-10 h-10 rounded-full border-2 border-slate-700 font-black text-slate-500">P</button>
+                <button onclick="setUser('Sven')" id="u-Sven" class="w-10 h-10 rounded-xl border-2 border-zinc-800 text-zinc-600 font-black active-user">S</button>
+                <button onclick="setUser('Melli')" id="u-Melli" class="w-10 h-10 rounded-xl border-2 border-zinc-800 text-zinc-600 font-black">M</button>
+                <button onclick="setUser('S.P.')" id="u-SP" class="w-10 h-10 rounded-xl border-2 border-zinc-800 text-zinc-600 font-black">P</button>
             </div>
         </div>
-
-        <!-- GRAFISCHE PUNKTE-TABELLE (Check24 Style) -->
-        <div class="max-w-md mx-auto space-y-3 bg-black/20 p-4 rounded-2xl border border-white/5">
-            <div>
-                <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>Sven</span><span>192 Pkt</span></div>
-                <div class="ranking-bar"><div class="ranking-fill" style="width: 65%;"></div></div>
-            </div>
-            <div>
-                <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>Melli</span><span>238 Pkt</span></div>
-                <div class="ranking-bar"><div class="ranking-fill opacity-50" style="width: 82%;"></div></div>
-            </div>
-            <div>
-                <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>S.P.</span><span>224 Pkt</span></div>
-                <div class="ranking-bar"><div class="ranking-fill opacity-30" style="width: 77%;"></div></div>
-            </div>
+        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+            <div class="ranking-box"><p class="text-[8px] font-black text-zinc-600 uppercase">Sven</p><p class="text-lg font-black">192</p></div>
+            <div class="ranking-box border-red-600/30"><p class="text-[8px] font-black text-zinc-600 uppercase">Melli</p><p class="text-lg font-black text-red-600">238</p></div>
+            <div class="ranking-box"><p class="text-[8px] font-black text-zinc-600 uppercase">S.P.</p><p class="text-lg font-black">224</p></div>
         </div>
     </header>
 
-    <!-- NATIVES SWIPEN DER SPIELTAGE -->
-    <div class="snap-container no-scrollbar" id="swipeArea">
-        <!-- Spieltage werden automatisch geladen -->
-    </div>
+    <div class="snap-container no-scrollbar" id="content"></div>
 
-    <!-- FIXED FOOTER -->
-    <footer class="fixed bottom-0 w-full glass border-t border-white/10 p-6 rounded-t-[2.5rem] shadow-2xl z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="text-[8px] font-black text-slate-500 uppercase leading-tight">
-                3 PKT: Exakt<br>2 PKT: Differenz<br>1 PKT: Tendenz
-            </div>
-            <button onclick="saveAll()" class="fortuna-gradient px-12 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-red-600/30 active:scale-95 transition-all">
-                Tipps Sichern
-            </button>
-        </div>
+    <footer class="fixed bottom-0 w-full p-6 bg-black/90 border-t border-white/5 z-50">
+        <button onclick="save()" class="w-full bg-[#ff0000] py-5 rounded-2xl font-black text-xs uppercase tracking-[5px] shadow-[0_0_30px_rgba(255,0,0,0.4)]">TIPPS SICHERN</button>
     </footer>
 
     <script>
         let activeUser = 'Sven';
-        const rounds = [30, 31, 32, 33, 34];
-
-        async function loadContent() {
+        async function load() {
             const res = await fetch('/api/data');
             const data = await res.json();
-            const container = document.getElementById('swipeArea');
-            container.innerHTML = '';
+            const view = document.getElementById('content');
+            view.innerHTML = '';
+            const rounds =;
             
-            rounds.forEach(round => {
-                let html = `<div class="snap-page"><h2 class="text-2xl font-black italic mb-6 text-red-600 uppercase tracking-tighter underline decoration-4 underline-offset-8">Spieltag ${round}</h2>`;
-                const roundMatches = data.matches.filter(m => m.round === round);
-                
-                roundMatches.forEach(m => {
+            rounds.forEach(r => {
+                let html = `<div class="snap-page"><h2 class="f95-red text-2xl mb-8 italic tracking-tighter uppercase underline decoration-4 underline-offset-8 text-white">Spieltag ${r}</h2>`;
+                const rMatches = data.matches.filter(m => m.round === r);
+                rMatches.forEach(m => {
+                    const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
                     html += `
-                    <div class="glass p-6 rounded-[2.5rem] mb-5 border-l-4 ${m.home_team === 'Düsseldorf' ? 'border-red-600' : 'border-slate-800'}">
-                        <div class="flex justify-between text-[8px] font-black text-slate-500 mb-3 uppercase tracking-widest">
-                            <span>${m.league} • ${m.match_date}</span>
-                            <span>Result: ${m.result}</span>
+                    <div class="glass-card ${isF95 ? 'f95-border' : ''}">
+                        <div class="flex justify-between text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4">
+                            <span>${m.league} • ${m.result}</span>
+                            <span class="${isF95 ? 'text-red-600' : ''}">${m.h2h_desc || ''}</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <div class="flex-1 text-right">
-                                <p class="font-black text-sm uppercase ${m.home_team === 'Düsseldorf' ? 'text-red-500' : ''}">${m.home_team}</p>
-                                <div class="mt-1">${renderDots(m.trend_h)}</div>
+                            <div class="flex-1 font-black text-xs uppercase tracking-tighter">${m.home_team}</div>
+                            <div class="flex gap-2 mx-2">
+                                <input type="number" id="t-${m.id}-h" placeholder="-">
+                                <input type="number" id="t-${m.id}-a" placeholder="-">
                             </div>
-                            <div class="flex gap-2 mx-4">
-                                <input type="number" id="tip-${m.id}-h" class="w-11 h-11 rounded-xl text-center text-xl outline-none" placeholder="-">
-                                <input type="number" id="tip-${m.id}-a" class="w-11 h-11 rounded-xl text-center text-xl outline-none" placeholder="-">
-                            </div>
-                            <div class="flex-1 text-left">
-                                <p class="font-black text-sm uppercase ${m.away_team === 'Düsseldorf' ? 'text-red-500' : ''}">${m.away_team}</p>
-                                <div class="mt-1">${renderDots(m.trend_a)}</div>
-                            </div>
+                            <div class="flex-1 text-right font-black text-xs uppercase tracking-tighter text-zinc-400">${m.away_team}</div>
                         </div>
                     </div>`;
                 });
                 html += `</div>`;
-                container.innerHTML += html;
+                view.innerHTML += html;
             });
         }
-
-        function renderDots(trend) {
-            if(!trend) return '';
-            return trend.split('').map(t => `<span class="dot ${t}"></span>`).join('');
+        function setUser(n) {
+            activeUser = n;
+            document.querySelectorAll('#userSwitch button').forEach(b => b.classList.remove('active-user'));
+            const id = n === 'S.P.' ? 'u-SP' : 'u-' + n;
+            document.getElementById(id).classList.add('active-user');
         }
-
-        function setUser(name) {
-            activeUser = name;
-            document.querySelectorAll('#userSwitch button').forEach(b => {
-                b.classList.replace('border-red-600', 'border-slate-700');
-                b.classList.add('text-slate-500');
-            });
-            const id = name === 'S.P.' ? 'u-SP' : 'u-' + name;
-            const btn = document.getElementById(id);
-            btn.classList.replace('border-slate-700', 'border-red-600');
-            btn.classList.remove('text-slate-500');
-        }
-
-        async function saveAll() {
-            alert("Master-System: Deine Tipps für " + activeUser + " werden gesichert!");
-        }
-
-        // --- AUTOPILOT-LOGIK ---
-        setInterval(() => { loadContent(); }, 60000);
-        loadContent();
-
+        function save() { alert('Tipps für ' + activeUser + ' gesichert!'); }
+        load();
     </script>
 </body>
 </html>
