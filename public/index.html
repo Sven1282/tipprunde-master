@@ -2,55 +2,61 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Tipprunde</title>
+    <title>MASTER TIPPRUNDE</title>
     <script src="https://tailwindcss.com"></script>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; }
         .f95-red { color: #ff0000; font-weight: 900; }
-        .glass-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
         .f95-border { border: 2px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
-        .snap-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
-        .snap-page { min-width: 100vw; scroll-snap-align: start; padding: 20px; }
+        .snap { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+        .page { min-width: 100vw; scroll-snap-align: start; padding: 20px; box-sizing: border-box; }
+        input { background: #111; border: 1px solid #333; color: #f00; width: 45px; height: 45px; text-align: center; border-radius: 10px; font-weight: 900; }
     </style>
 </head>
 <body class="pb-32">
     <header class="p-6 sticky top-0 bg-black z-50 border-b border-white/5 text-center">
-        <h1 class="f95-red text-2xl italic uppercase">F95 MASTER 25/26</h1>
-        <div class="flex justify-around mt-4 text-[10px] font-bold text-gray-500 uppercase">
+        <h1 class="f95-red text-2xl italic uppercase tracking-tighter">F95 MASTER</h1>
+        <div class="flex justify-around mt-4 text-[10px] font-black uppercase text-gray-500">
             <span>Sven: 192</span><span>Melli: 238</span><span>S.P.: 224</span>
         </div>
     </header>
 
-    <div class="snap-container" id="content"></div>
+    <div class="snap" id="view"></div>
 
     <script>
-        const rounds =; // Fest verdrahtet
+        const rounds = [30, 31, 32, 33, 34];
         async function load() {
-            const res = await fetch('/api/data');
-            const data = await res.json();
-            const view = document.getElementById('content');
-            view.innerHTML = '';
-            rounds.forEach(r => {
-                let html = `<div class="snap-page"><h2 class="f95-red text-xl mb-6">Spieltag ${r}</h2>`;
-                const rMatches = data.matches.filter(m => m.round === r);
-                if(rMatches.length === 0) html += `<p class="text-gray-600">Keine Daten für Tag ${r}</p>`;
-                rMatches.forEach(m => {
-                    const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
-                    html += `
-                    <div class="glass-card ${isF95 ? 'f95-border' : ''}">
-                        <div class="flex justify-between text-[9px] text-gray-500 mb-2 uppercase">
-                            <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase">${m.home_team}</span>
-                            <div class="flex gap-2"><input type="number" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded" placeholder="0"><input type="number" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded" placeholder="0"></div>
-                            <span class="text-xs font-bold uppercase text-gray-400">${m.away_team}</span>
-                        </div>
-                    </div>`;
+            try {
+                const res = await fetch('/api/data');
+                const data = await res.json();
+                const view = document.getElementById('view');
+                view.innerHTML = '';
+                
+                rounds.forEach(r => {
+                    let html = `<div class="page"><h2 class="f95-red text-xl mb-6">Spieltag ${r}</h2>`;
+                    const matches = data.matches.filter(m => m.round === r);
+                    
+                    if (matches.length === 0) html += `<p class="text-gray-700 italic">Keine Daten für Tag ${r}. Bitte SQL-Befehl ausführen.</p>`;
+                    
+                    matches.forEach(m => {
+                        const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
+                        html += `
+                        <div class="card ${isF95 ? 'f95-border' : ''}">
+                            <div class="flex justify-between text-[9px] text-gray-500 mb-3 uppercase">
+                                <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black uppercase">${m.home_team}</span>
+                                <div class="flex gap-2"><input type="number" placeholder="0"><input type="number" placeholder="0"></div>
+                                <span class="text-xs font-black uppercase text-gray-500">${m.away_team}</span>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                    view.innerHTML += html;
                 });
-                html += `</div>`;
-                view.innerHTML += html;
-            });
+            } catch (e) { document.getElementById('view').innerHTML = "Fehler: " + e; }
         }
         load();
     </script>
