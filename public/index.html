@@ -1,46 +1,67 @@
-        let activeUser = 'Sven';
-        const rounds =;
+<script>
+    let activeUser = 'Sven';
+    const rounds =;
 
-        async function load() {
-            const res = await fetch('/api/data');
-            const data = await res.json();
-            const view = document.getElementById('view');
-            view.innerHTML = '';
-            
-            rounds.forEach(r => {
-                let html = `<div class="page"><h2 class="f95-red text-xl mb-6">Spieltag ${r}</h2>`;
-                const matches = data.matches.filter(m => m.round === r);
-                matches.forEach(m => {
-                    const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
-                    html += `
-                    <div class="card ${isF95 ? 'f95-border' : ''}">
-                        <div class="flex justify-between text-[9px] text-gray-500 mb-3 uppercase">
-                            <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
+    async function load() {
+        const res = await fetch('/api/data');
+        const data = await res.json();
+        const view = document.getElementById('view');
+        view.innerHTML = '';
+        
+        rounds.forEach(r => {
+            let html = `<div class="page"><h2 class="f95-red text-xl mb-6 italic uppercase tracking-tighter">Spieltag ${r}</h2>`;
+            const rMatches = data.matches.filter(m => m.round === r);
+            rMatches.forEach(m => {
+                const isF95 = m.home_team.includes('Düsseldorf') || m.away_team.includes('Düsseldorf');
+                html += `
+                <div class="card ${isF95 ? 'f95-border' : ''}">
+                    <div class="flex justify-between text-[9px] text-gray-500 mb-3 uppercase">
+                        <span>${m.league} • ${m.result}</span><span>${m.h2h_desc || ''}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-black uppercase">${m.home_team}</span>
+                        <div class="flex gap-2">
+                            <input type="number" id="t-${m.id}-h" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded font-black" placeholder="0">
+                            <input type="number" id="t-${m.id}-a" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded font-black" placeholder="0">
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-black uppercase">${m.home_team}</span>
-                            <div class="flex gap-2">
-                                <input type="number" id="t-${m.id}-h" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded" placeholder="0">
-                                <input type="number" id="t-${m.id}-a" class="w-10 h-10 bg-black border border-gray-700 text-red-600 text-center rounded" placeholder="0">
-                            </div>
-                            <span class="text-xs font-black uppercase text-gray-500">${m.away_team}</span>
-                        </div>
-                    </div>`;
-                });
-                html += `</div>`;
-                view.innerHTML += html;
+                        <span class="text-xs font-black uppercase text-gray-500">${m.away_team}</span>
+                    </div>
+                </div>`;
             });
-        }
+            html += `</div>`;
+            view.innerHTML += html;
+        });
+    }
 
-        async function save() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            for (let i of inputs) {
-                if (i.value !== "") {
-                    const matchId = i.id.split('-')[1];
-                    const side = i.id.split('-')[2]; // h oder a
-                    // Hier wird der Tipp-String zusammengebaut und gesendet
-                }
+    async function save() {
+        const inputs = document.querySelectorAll('input[type="number"]');
+        const tipsToSave = {};
+
+        // Sammle alle Eingaben
+        inputs.forEach(input => {
+            const [_, id, side] = input.id.split('-');
+            if (!tipsToSave[id]) tipsToSave[id] = { h: '', a: '' };
+            tipsToSave[id][side] = input.value;
+        });
+
+        // Sende jeden Tipp an die Datenbank
+        for (const matchId in tipsToSave) {
+            const tip = `${tipsToSave[matchId].h}:${tipsToSave[matchId].a}`;
+            if (tipsToSave[matchId].h !== "" && tipsToSave[matchId].a !== "") {
+                await fetch('/api/tip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: activeUser, matchId: matchId, tip: tip })
+                });
             }
-            alert('Master-System: Tipps für ' + activeUser + ' sind im Tresor!');
         }
-        load();
+        alert('MASTER-SYSTEM: Alle Tipps für ' + activeUser + ' wurden im Tresor gesichert!');
+    }
+
+    function setUser(name) {
+        activeUser = name;
+        alert(name + " ist jetzt aktiv!");
+    }
+
+    load();
+</script>
